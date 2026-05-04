@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reportar Daño - Sistema de Reparaciones</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .success-message {
+            background: #4caf50;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .error-message {
+            background: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        .info-box {
+            background: #f5f5f5;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            color: #333;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .btn-submit {
+                padding: 14px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🔧</div>
+            <h1>REPORTAR DAÑO</h1>
+            <p class="subtitle">Crea una orden de reparación en segundos</p>
+        </div>
+
+        <div class="info-box">
+            <strong>ℹ️ Instrucciones:</strong> Llena este formulario cuando una máquina tenga daño. El técnico será notificado automáticamente.
+        </div>
+
+        <div class="success-message" id="successMessage">
+            ✅ ¡Orden creada exitosamente! El técnico ha sido notificado.
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <form id="orderForm">
+            <div class="form-group">
+                <label for="fecha">📅 Fecha del Reporte</label>
+                <input type="date" id="fecha" required>
+            </div>
+
+            <div class="form-group">
+                <label for="maquina">🔧 Código de Máquina</label>
+                <select id="maquina" required>
+                    <option value="">-- Selecciona una máquina --</option>
+                    <option value="G-001">G-001 - Honda GX35</option>
+                    <option value="G-002">G-002 - Stihl FS250</option>
+                    <option value="G-003">G-003 - Husqvarna 143R</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="operario">👤 Tu Nombre (Operario)</label>
+                <select id="operario" required>
+                    <option value="">-- Selecciona tu nombre --</option>
+                    <option value="Juan Pérez">Juan Pérez</option>
+                    <option value="Carlos Ruiz">Carlos Ruiz</option>
+                    <option value="Luis Torres">Luis Torres</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="cuadrilla">👷 Tu Cuadrilla</label>
+                <select id="cuadrilla" required>
+                    <option value="">-- Selecciona tu cuadrilla --</option>
+                    <option value="Cuadrilla 1">Cuadrilla 1</option>
+                    <option value="Cuadrilla 2">Cuadrilla 2</option>
+                    <option value="Cuadrilla 3">Cuadrilla 3</option>
+                    <option value="Cuadrilla 4">Cuadrilla 4</option>
+                    <option value="Cuadrilla 5">Cuadrilla 5</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">📝 Descripción del Daño</label>
+                <textarea id="descripcion" placeholder="Describe qué pasó con la máquina..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">
+                <span id="btnText">CREAR ORDEN DE REPARACIÓN</span>
+                <div class="spinner" id="spinner"></div>
+            </button>
+        </form>
+
+        <div class="footer">
+            <p>Sistema de Gestión de Reparaciones © 2026</p>
+            <p>Una vez envíes el formulario, el técnico será notificado automáticamente</p>
+        </div>
+    </div>
+
+    <script>
+        // Establecer fecha de hoy por defecto
+        document.getElementById('fecha').valueAsDate = new Date();
+
+        // Manejar el envío del formulario
+        document.getElementById('orderForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            // Mostrar spinner
+            const spinner = document.getElementById('spinner');
+            const btnText = document.getElementById('btnText');
+            const btn = document.querySelector('.btn-submit');
+            
+            spinner.style.display = 'block';
+            btnText.style.display = 'none';
+            btn.disabled = true;
+
+            try {
+                // Preparar datos
+                const datos = {
+                    fecha: document.getElementById('fecha').value,
+                    maquina: document.getElementById('maquina').value,
+                    operario: document.getElementById('operario').value,
+                    cuadrilla: document.getElementById('cuadrilla').value,
+                    descripcion: document.getElementById('descripcion').value
+                };
+
+                // Aquí iría la conexión a la API de Smartsheet
+                // Por ahora simularemos éxito después de 1 segundo
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Mostrar mensaje de éxito
+                document.getElementById('successMessage').style.display = 'block';
+                document.getElementById('errorMessage').style.display = 'none';
+
+                // Limpiar formulario
+                document.getElementById('orderForm').reset();
+                document.getElementById('fecha').valueAsDate = new Date();
+
+                // Ocultar mensaje de éxito después de 5 segundos
+                setTimeout(() => {
+                    document.getElementById('successMessage').style.display = 'none';
+                }, 5000);
+
+            } catch (error) {
+                // Mostrar error
+                document.getElementById('errorMessage').textContent = '❌ Error: ' + error.message;
+                document.getElementById('errorMessage').style.display = 'block';
+            } finally {
+                // Ocultar spinner
+                spinner.style.display = 'none';
+                btnText.style.display = 'block';
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>

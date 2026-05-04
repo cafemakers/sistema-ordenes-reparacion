@@ -1,0 +1,15 @@
+{
+  "name": "sistema-ordenes-reparacion",
+  "version": "1.0.0",
+  "description": "Sistema de Reportes de Daño y Órdenes de Reparación",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "keywords": ["reparaciones", "ordenes"],
+  "author": "Viktor Pena",
+  "license": "MIT",
+  "engines": {
+    "node": "18.x"
+  }
+}
